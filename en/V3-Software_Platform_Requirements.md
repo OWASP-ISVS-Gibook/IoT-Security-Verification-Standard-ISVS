@@ -2,6 +2,12 @@
 
 ## Control Objective
 
+The bootloader is the first piece of code to run during the device's boot process. The firmware vendor is responsible for configuring it correctly, otherwise its vulnerabilities can undermine the security of the entire device, leading to compromise and device hijacking. Controls in this chapter ensure boot trustworthiness by verifying cryptographic signatures on the loaded code, not allowing loading images loading from external locations, and disallowing memory, shell, and other debug access during boot.
+
+The operating system, and its kernel in particular, are central for device security, as they run in privileged mode and implement critical device functionality, including many security primitives. This necessitates best security practices for operating system and kernel configuration and hardening.
+
+The Linux operating system is one of the most popular in IoT. It has many features from first-line security to defense-in-depth, including the isolation mechanisms supported by namespaces and cgroups, and additional kernel security modules for access controls.
+
 ## Security Verification Requirements
 
 ### Bootloader
@@ -11,7 +17,7 @@
 | **3.1.1** | Verify that the bootloader does not allow code to be loaded from arbitrary locations. Locations include both storage (SD, USB, etc.) and network locations (over TCP/IP). | ✓ | ✓ | ✓ |
 | **3.1.2** | Verify bootloader configurations are immutable in production releases. | | ✓ | ✓ |
 | **3.1.3** | Verify that communication interfaces such as, USB, UART, and other variants are disabled or adequately protected during every stage of the device's boot process. | | ✓ | ✓ |
-| **3.1.4** | Verify that the authenticity of the first stage bootloader is verified by a trusted component of which the configuration cannot be altered. e.g. Secure Boot/Trusted Boot | | ✓ | ✓ |
+| **3.1.4** | Verify that the authenticity of the first stage bootloader is verified by a trusted component of which the configuration in read-only memory (ROM) cannot be altered. e.g. CPU Based Secure Boot/Trusted Boot | | ✓ | ✓ |
 | **3.1.5** | Verify that the authenticity of next bootloader stages or application code is cryptographically verified during every step of the boot process. | | ✓ | ✓ |
 | **3.1.6** | Verify that bootloader stages do not contain sensitive information (e.g. private keys or passwords logged to the console) as part of device start-up.  | | ✓ | ✓ |
 | **3.1.7** | Verify that firmware is stored in an encrypted volume at rest. | | ✓ | ✓ |
@@ -53,12 +59,12 @@
 | **3.4.3** | Verify that the authenticity of updates are cryptographically signed by a trusted source and verified before execution. | ✓ | ✓ | ✓ |
 | **3.4.4** | Verify that the update process is not vulnerable to time-of-check time-of-use attacks (TOCTOU). This is generally accomplished by applying the update right after the authenticity of the update is validated.  | ✓ | ✓ | ✓ |
 | **3.4.5** | Verify that updates do not modify user-configured preferences, security, and/or privacy settings without notifying the user.  | ✓ | ✓ | ✓ |
-| **3.4.6** | Verify that the device cannot be downgraded to known vulnerable versions (anti-rollback). | ✓ | ✓ | ✓ |
+| **3.4.6** | Verify that the device cannot be downgraded to known vulnerable versions (anti-rollback). |  |  | ✓ |
 | **3.4.7** | Verify that in the event of an update failure, the device reverts to a backup image or notifies the IoT ecosystem. | ✓ | ✓ | ✓ |
 | **3.4.8** | Verify that unsigned debug pre-production firmware builds can not be flashed onto devices. | ✓ | ✓ | ✓ |
-| **3.4.9** | Verify that encrypted firmware images are securely decrypted on the device. | ✓ | ✓ | ✓ |
-| **3.4.10** | Verify that the device authenticates to the  update server component prior to downloading the update.| ✓ | ✓ | ✓ |
-| **3.4.11** | Verify that firmware updates are stored encrypted server-side. | ✓ | ✓ | ✓ |
+| **3.4.9** | Verify that encrypted firmware images are securely decrypted on the device. |  | ✓ | ✓ |
+| **3.4.10** | Verify that the device authenticates to the update server component prior to downloading the update.| ✓ | ✓ | ✓ |
+| **3.4.11** | Verify that firmware updates are stored encrypted server-side. | | ✓ | ✓ |
 
 ### Security chip integrations
 
@@ -67,7 +73,7 @@
 | **3.5.1** | Verify that encryption is used on the bus between the security chip and other hardware components. | | ✓ | ✓ |
 | **3.5.2** | Verify that keys (either secret or private) used to enable encryption on the serial bus are properly secured on the host.| | ✓ | ✓ |
 | **3.5.3** | Verify any default vendor keys used in bus encryption are replaced in production builds. | | ✓ | ✓ |
-| **3.5.4** | Verify that deprecated insecure ciphers and hash functions (e.g.. 3DES, SHA1) in new applications are not used, even if provided by the hardware security chip. | | ✓ | ✓ |
+| **3.5.4** | Verify that deprecated insecure ciphers and hash functions (e.g. 3DES, MD5, SHA1) in new applications are not used, even if provided by the hardware security chip. | | ✓ | ✓ |
 
 ### Kernel space application requirements
 
@@ -78,6 +84,7 @@
 
 ## References
 For more information, see also:
+
 - ENISA - Baseline Security Recommendations for IoT: <https://www.enisa.europa.eu/publications/baseline-security-recommendations-for-iot/at_download/fullReport>
 - CIS Benchmarks: <https://www.cisecurity.org/cis-benchmarks/>
 - TGC Guidance for Secure Update of Software and Firmware on Embedded Systems: <https://trustedcomputinggroup.org/wp-content/uploads/TCG-Secure-Update-of-SW-and-FW-on-Devices-v1r72_pub.pdf>
